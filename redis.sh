@@ -1,5 +1,4 @@
-#!/bin/bash
-START_TIME=$(date +%s)
+START_TIME_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -8,6 +7,7 @@ N="\e[0m"
 LOGS_FOLDER="/var/log/roboshop-logs"
 SCRIPT_NAME=$(echo $0 | cut -d "." -f1)
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log"
+SCRIPT_DIR=$PWD
 
 mkdir -p $LOGS_FOLDER
 echo "Script started executing at: $(date)" | tee -a $LOG_FILE
@@ -32,24 +32,22 @@ VALIDATE(){
     fi
 }
 
-    cp mongo.repo /etc/yum.repos.d/mongodb.repo  &>>$LOG_FILE
-    VALIDATE $? "Copying mongodb repo"
+dnf module disable redis -y &>>$LOG_FILE
+VALIDATE $? "Disabling Deafult Redis Module"
+dnf module enable redis:7 -y  &>>$LOG_FILE
+VALIDATE $? "Enabling the Redis 7 version"
+dnf install redis -y  &>>$LOG_FILE
+VALIDATE $? " Installing the Redis DB " 
 
-    dnf install mongodb-org -y &>>$LOG_FILE
-    VALIDATE $? "Installing mongodb"
+sed -i -e 's/127.0.0.1/0.0.0.0/g' -e '/protected-mode/ c protected-mode no' /etc/redis/redis.conf &>>$LOG_FILE
+VALIDATE $? "Editing the Redis config file "
 
-    systemctl enable mongod &>>$LOG_FILE
-    VALIDATE $? "Installing mongodb"
-    systemctl start mongod &>>$LOG_FILE
-    VALIDATE $? "Starting mongodb"
+systemctl enable redis  &>>$LOG_FILE
+VALIDATE $? "Enabling Redis"
+systemctl start redis  &>>$LOG_FILE
+VALIDATE $? "Starting Redis"
 
-    sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
-    VALIDATE $? "Editing MongoDB conf file for remote connections"
-
-    systemctl restart mongod &>>$LOG_FILE
-    VALIDATE $? "Restarting Mongodb"
-
-    END_TIME=$(date +%s)
+END_TIME=$(date +%s)
 TOTAL_TIME=$(( $END_TIME - $START_TIME ))
 
 echo -e "Script exection completed successfully, $Y time taken: $TOTAL_TIME seconds $N" | tee -a $LOG_FILE

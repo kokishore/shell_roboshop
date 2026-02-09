@@ -1,5 +1,5 @@
 #!/bin/bash
-START_TIME_TIME=$(date +%s)
+START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -33,8 +33,8 @@ VALIDATE(){
     fi
 }
 
-dnf module list nginx
-VALIDATE $? "Listing the modules present in Nginx" &>>$LOG_FILE
+dnf module list nginx  &>>$LOG_FILE
+VALIDATE $? "Listing the modules present in Nginx"  
 
 dnf module disable nginx -y &>>$LOG_FILE
 VALIDATE $? "Disabling the default nginx"  

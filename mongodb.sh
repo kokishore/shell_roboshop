@@ -1,5 +1,5 @@
 #!/bin/bash
-START_TIME=$(date +%s)
+
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
@@ -32,24 +32,20 @@ VALIDATE(){
     fi
 }
 
-    cp mongo.repo /etc/yum.repos.d/mongodb.repo  &>>$LOG_FILE
-    VALIDATE $? "Copying mongodb repo"
+cp mongo.repo /etc/yum.repos.d/mongodb.repo
+VALIDATE $? "Copying MongoDB repo"
 
-    dnf install mongodb-org -y &>>$LOG_FILE
-    VALIDATE $? "Installing mongodb"
+dnf install mongodb-org -y &>>$LOG_FILE
+VALIDATE $? "Installing mongodb server"
 
-    systemctl enable mongod &>>$LOG_FILE
-    VALIDATE $? "Installing mongodb"
-    systemctl start mongod &>>$LOG_FILE
-    VALIDATE $? "Starting mongodb"
+systemctl enable mongod &>>$LOG_FILE
+VALIDATE $? "Enabling MongoDB"
 
-    sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
-    VALIDATE $? "Editing MongoDB conf file for remote connections"
+systemctl start mongod &>>$LOG_FILE
+VALIDATE $? "Starting MongoDB"
 
-    systemctl restart mongod &>>$LOG_FILE
-    VALIDATE $? "Restarting Mongodb"
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+VALIDATE $? "Editing MongoDB conf file for remote connections"
 
-    END_TIME=$(date +%s)
-TOTAL_TIME=$(( $END_TIME - $START_TIME ))
-
-echo -e "Script exection completed successfully, $Y time taken: $TOTAL_TIME seconds $N" | tee -a $LOG_FILE
+systemctl restart mongod &>>$LOG_FILE
+VALIDATE $? "Restarting MongoDB"

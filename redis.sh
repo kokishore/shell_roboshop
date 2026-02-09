@@ -1,4 +1,4 @@
-START_TIME_TIME=$(date +%s)
+START_TIME=$(date +%s)
 USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"

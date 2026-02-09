@@ -33,8 +33,7 @@ VALIDATE(){
     fi
 }
 
-dnf module list nodejs &>>$LOG_FILE
-VALIDATE $? "Listing the modules of  Nodejs"
+
 
 dnf module disable nodejs -y &>>$LOG_FILE
 VALIDATE $? " Disabaling the default  nodejs version "
@@ -49,7 +48,7 @@ id roboshop
 if [ $? -ne 0 ]
 then 
     useradd --system --home /app --shell /sbin/nologin --comment "roboshop system user" roboshop &>>$LOG_FILE
-    validate $? " Creating System User Roboshop"
+    VALIDATES $? " Creating System User Roboshop"
 else
     echo " System User Roboshop is already created .... $Y Skipping $N "
 fi

@@ -59,12 +59,14 @@ VALIDATE $? " Creating app directory"
 curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue-v3.zip &>>$LOG_FILE
 VALIDATE $? " Downloading the catalogue code"
 cd /app 
+rm -rf /app/*
+VALIDATE $? "Deleting the old content  if any "
 unzip /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "unzipping the catalogue code"
 
 cd /app 
 npm install &>>$LOG_FILE
-VALIDATE $? "Installing dependencies"
+VALIDATE $? "Installing ldependencies"
 
 cp $SCRIPT_DIR/catalogue.service /etc/systemd/system/catalogue.service &>>$LOG_FILE
 VALIDATE $? "Copying the catalogue service file"
@@ -80,7 +82,7 @@ cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
 VALIDATE $? " Copying the mongodb repo"
 
 dnf install mongodb-mongosh -y &>>$LOG_FILE
-VALIDATE $? "Installing mongodb client"
+VALIDATE $?  co"Installing mongodb client"
 
 STATUS=$(mongosh --host mongodb.kaws84s.site --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
 if [ $STATUS -lt 0 ]

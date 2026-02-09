@@ -82,7 +82,7 @@ cp $SCRIPT_DIR/mongo.repo /etc/yum.repos.d/mongo.repo &>>$LOG_FILE
 VALIDATE $? " Copying the mongodb repo"
 
 dnf install mongodb-mongosh -y &>>$LOG_FILE
-VALIDATE $?  co"Installing mongodb client"
+VALIDATE $?  "Installing mongodb client"
 
 STATUS=$(mongosh --host mongodb.kaws84s.site --eval 'db.getMongo().getDBNames().indexOf("catalogue")')
 if [ $STATUS -lt 0 ]
